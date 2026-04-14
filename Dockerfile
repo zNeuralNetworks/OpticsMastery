@@ -35,15 +35,16 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 # Switch to non-root user
 USER nodejs
 
-# Health check
+# Expose port (Cloud Run default)
+EXPOSE 8080
+
+# Cloud Run requires PORT environment variable (default to 8080)
+ENV PORT=8080 NODE_ENV=production
+
+# Health check (uses PORT env var dynamically)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD node -e "const port = process.env.PORT || 8080; require('http').get('http://localhost:' + port, (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Expose port
-EXPOSE 3000
-
-# Cloud Run requires PORT environment variable
-ENV PORT=3000 NODE_ENV=production
-
-# Serve the built app
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Serve the built app - uses PORT environment variable
+# Use sh -c to expand environment variables
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]

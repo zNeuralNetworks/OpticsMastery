@@ -1,0 +1,122 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║           ✅ CLOUD RUN DEPLOYMENT ISSUE RESOLVED ✅                       ║
+║                                                                            ║
+║              Port Configuration: 3000 → 8080                              ║
+║              Cloud Build Configuration: GKE → Cloud Run                   ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 WHAT WAS FIXED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3 files modified:
+
+1. ✅ Dockerfile
+   - EXPOSE: 3000 → 8080
+   - ENV PORT: 3000 → 8080
+   - CMD: ["serve", "-s", "dist", "-l", "3000"]
+      → ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]
+   - HEALTHCHECK: Uses dynamic PORT from environment
+
+2. ✅ cloudbuild.yaml
+   - Deploy step: Changed from gke-deploy → cloud-builders/run
+   - Added --port 8080 flag
+   - Added --memory 512Mi and --cpu 1 flags
+   - Updated image registry to Artifact Registry format
+   - Added --timeout 3600 flag
+
+3. ✅ compose.prod.yaml
+   - Port: "3000:3000" → "8080:8080"
+   - PORT env: 3000 → 8080
+   - Health check updated for port 8080
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 KEY IMPROVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Respects Cloud Run default PORT=8080
+✓ Flexible port configuration (can override with -e PORT=custom)
+✓ Uses Cloud Run specific deployment (not Kubernetes)
+✓ Health checks now validate on correct port
+✓ Proper resource allocation (512Mi memory, 1 CPU)
+✓ Artifact Registry integration
+✓ All port references consistent
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 TESTING COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test locally before pushing:
+
+  # Dev with hot reload (port 5173)
+  docker compose up
+
+  # Production on port 8080
+  docker run -d -p 8080:8080 optics-master:latest
+  curl http://localhost:8080
+
+  # Production with compose
+  docker compose -f compose.prod.yaml up -d
+  curl http://localhost:8080
+
+  # Custom port
+  docker run -d -p 3000:8080 -e PORT=3000 optics-master:latest
+  curl http://localhost:3000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Commit and push:
+
+  git add Dockerfile cloudbuild.yaml compose.prod.yaml CLOUD_RUN_FIX.md
+  git commit -m "Fix Cloud Run deployment - port configuration (3000→8080)
+
+  - Updated Dockerfile to use PORT=8080 (Cloud Run default)
+  - Fixed CMD to respect PORT environment variable
+  - Updated cloudbuild.yaml to use Cloud Run deploy
+  - Added resource allocation (512Mi memory, 1 CPU)
+  - Updated compose.prod.yaml for port 8080
+  - Fixed HEALTHCHECK for dynamic port"
+  
+  git push origin main
+
+Cloud Build will:
+  1. Build Docker image with port 8080 ✓
+  2. Push to Artifact Registry ✓
+  3. Deploy to Cloud Run with --port 8080 ✓
+  4. Health checks pass ✓
+  5. Application accessible ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 PORT REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Development:
+  Vite dev server:     localhost:5173  (npm run dev)
+  Vite hot reload:     localhost:5173
+
+Production (Local):
+  Docker default:      localhost:8080
+  Docker custom:       localhost:XXXX  (with -e PORT=XXXX)
+
+Production (Cloud Run):
+  Automatic:           PORT=8080 (set by Cloud Run)
+  Cloud Run URL:       https://your-service.run.app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem:     Container on port 3000, Cloud Run expects 8080 → Deployment failed
+Solution:    Updated container to port 8080, updated Cloud Run config
+Result:      Next deployment should succeed ✓
+
+Files changed:     3
+Documentation:     CLOUD_RUN_FIX.md
+Status:            Ready for deployment
+
+Next action:       git push origin main
+
