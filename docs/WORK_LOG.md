@@ -10,6 +10,33 @@ Update rule:
 Suggested next-session prompt:
 - `Review docs/WORK_LOG.md first, then continue from the latest open items.`
 
+## 2026-04-14
+
+### GitHub Sync and Repository Hygiene
+- Pushed the latest local Optics Mastery app state to `https://github.com/zNeuralNetworks/OpticsMastery.git`.
+- Repointed `origin` from the previous `Babia7/OpticsMastery` remote to `zNeuralNetworks/OpticsMastery`.
+- Created commit `3e78620` / `3e786202bb4a86371827bf4eb20757f409d3315d` on `main`.
+- Untracked local-only ignored paths while leaving local copies on disk:
+  - `.claude/`
+  - `.codex-skill-build/`
+  - `tmp/`
+- Confirmed `git ls-files -ci --exclude-standard` returns no tracked ignored files after the cleanup.
+- Updated `.gitignore` and `.dockerignore` so future Git and Docker operations avoid secrets, build artifacts, temporary files, and local agent state.
+
+Why it mattered:
+- GitHub now matches the local app state for Optics Mastery and the AI Cluster Planner.
+- Future pushes are less likely to leak local Codex/Claude state, temporary extracted source material, build output, or secrets.
+
+Verification:
+- `npm run verify` passed.
+- Non-blocking warnings observed:
+  - local shell used Node `25.9.0` while `.nvmrc` expects Node `22.22.2`
+  - Vite/framer-motion emitted expected `"use client"` bundle warnings
+
+Open follow-ups:
+- Prefer `nvm use` before validation so local runs align with the Node 22 baseline.
+- Keep using `git ls-files -ci --exclude-standard` before future pushes.
+
 ## 2026-04-02
 
 ### Learning Product Pass

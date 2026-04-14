@@ -72,6 +72,24 @@ That runs:
 - `npm run test:ci`
 - `npm run build`
 
+## Repository hygiene
+
+Canonical GitHub remote:
+
+```bash
+git remote -v
+# origin  https://github.com/zNeuralNetworks/OpticsMastery.git
+```
+
+Before pushing, confirm ignored local artifacts are not tracked:
+
+```bash
+git ls-files -ci --exclude-standard
+git status --short --branch
+```
+
+Local-only agent and temporary paths such as `.claude/`, `.codex-skill-build/`, `tmp/`, `.env*`, `dist/`, logs, and editor metadata should stay out of Git. If one is already tracked, untrack it with `git rm --cached` so the local file remains on disk.
+
 ## Orientation path
 
 For repo work, start here:
@@ -107,15 +125,3 @@ Do not let it drift into:
 - procurement logic
 - exact queue-policy validation
 - final rack layout or deployment-ready implementation claims
-
-Git Commands
-git status
-git add .
-git commit -m "initial commit"
-git push -u origin main
-
-.gitignore
-node_modules
-dist
-.env
-.DS_Store

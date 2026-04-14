@@ -49,6 +49,44 @@ npm run dev
 - `npm run build`
 - `npm run verify`
 
+## GitHub sync and hygiene
+
+Canonical remote:
+
+```bash
+git remote -v
+# origin  https://github.com/zNeuralNetworks/OpticsMastery.git
+```
+
+Before committing or pushing:
+
+```bash
+git status --short --branch
+git ls-files -ci --exclude-standard
+```
+
+Expected result for ignored tracked files is no output. If ignored local-only files are tracked, untrack them without deleting local copies:
+
+```bash
+git rm --cached -r .claude .codex-skill-build tmp
+```
+
+Do not push:
+
+- `.claude/`
+- `.codex-skill-build/`
+- `tmp/`
+- `.env*`
+- `dist/`, `build/`, coverage, logs, or editor metadata
+
+Latest known GitHub sync:
+
+- Date: 2026-04-14
+- Remote: `https://github.com/zNeuralNetworks/OpticsMastery.git`
+- Branch: `main`
+- Commit: `3e786202bb4a86371827bf4eb20757f409d3315d`
+- Verification: `npm run verify` passed with non-blocking Node-version and framer-motion/Vite warnings
+
 ## Default review workflow
 
 1. Read `AGENTS.md`

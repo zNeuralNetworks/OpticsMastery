@@ -1,4 +1,14 @@
-# Codex Setup & Environment Review (2026-03-14)
+# Codex Setup & Environment Review (historical, 2026-03-14)
+
+Status: historical note. This file predates the current Optics Mastery repo cleanup and includes InfraLens-era observations. For current Codex operating guidance, use:
+
+- [AGENTS.md](../AGENTS.md)
+- [CODEX_RUNBOOK.md](./CODEX_RUNBOOK.md)
+- [WORK_LOG.md](./WORK_LOG.md)
+
+Current canonical GitHub remote: `https://github.com/zNeuralNetworks/OpticsMastery.git`
+
+Current hygiene rule: before pushing, run `git ls-files -ci --exclude-standard` and ensure local-only agent artifacts, temporary files, build output, and secrets are not tracked.
 
 This review summarizes the current InfraLens repository/tooling setup as observed from the active Codex environment, plus recommended improvements.
 
@@ -141,4 +151,3 @@ Why: improves agent consistency and reduces prompt overhead.
 - `npm run build`
 - `npm outdated`
 - `npm audit --omit=dev`
-

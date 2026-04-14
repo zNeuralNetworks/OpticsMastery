@@ -1,5 +1,27 @@
 # GitHub Push Checklist — Optics Master
 
+Status update, 2026-04-14:
+
+- Latest local app state was pushed to `https://github.com/zNeuralNetworks/OpticsMastery.git`.
+- Branch: `main`
+- Commit: `3e786202bb4a86371827bf4eb20757f409d3315d`
+- `origin` now tracks `https://github.com/zNeuralNetworks/OpticsMastery.git`.
+- `.claude/`, `.codex-skill-build/`, and `tmp/` were untracked from Git and remain ignored for future operations.
+- `npm run verify` passed; only non-blocking Node-version and framer-motion/Vite warnings were observed.
+
+For future pushes, use this quick preflight before staging:
+
+```bash
+git status --short --branch
+git remote -v
+git ls-files -ci --exclude-standard
+npm run verify
+```
+
+`git ls-files -ci --exclude-standard` should return no output.
+
+The original checklist below is retained as a Docker-documentation push guide, but the latest GitHub sync has already been completed.
+
 ## ✅ Pre-Push Verification
 
 ### Files to Commit (15 new/modified)

@@ -6,6 +6,7 @@ Context:
   - a copied router-based `src/` app from AI Fabric Architecture Studio that remains in-tree as reference/staging code
 - The production-local boot target for this repo is the legacy Optics Master shell, not `src/main.tsx`.
 - The AI Cluster Planner inside the legacy shell has absorbed a number of newer planner concepts, but it is still not the same UI architecture as the standalone `src/features/cluster-designer` app.
+- Canonical GitHub remote: `https://github.com/zNeuralNetworks/OpticsMastery.git`
 
 How to work here:
 - Start by identifying which app surface the task actually targets:
@@ -15,6 +16,7 @@ How to work here:
 - Preserve the modeling boundary: keep calculations in typed hooks/services/data layers, not inside React rendering code.
 - Prefer small, verifiable changes over broad replacement. When possible, port good ideas from `src/` into the legacy planner rather than replacing the whole shell.
 - Validate with `npm run verify` before closing substantial work.
+- Before committing or pushing, check ignored tracked files with `git ls-files -ci --exclude-standard`. Keep local agent artifacts, temporary PDFs/extracts, build output, and secrets out of Git.
 
 Fastest review path for Optics Master:
 1. Read `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/README.md`
@@ -42,6 +44,12 @@ Definition of done:
 - `npm run typecheck`
 - `npm run test:ci`
 - `npm run build`
+
+Git and repository hygiene:
+- `origin` should point to `https://github.com/zNeuralNetworks/OpticsMastery.git`.
+- Do not commit `.claude/`, `.codex-skill-build/`, `tmp/`, `dist/`, `.env*`, local Docker overrides, logs, or editor metadata.
+- Local-only files may remain on disk; remove them from Git with `git rm --cached` rather than deleting the user's local copies.
+- If documenting a push, include the commit hash, target remote, validation command, and any non-blocking warnings.
 
 Implementation preferences:
 - Use modern TypeScript and functional React components.

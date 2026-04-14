@@ -1,5 +1,14 @@
 node_modules/
 dist/
+build/
+coverage/
+.vite/
+.turbo/
+.claude/
+.codex-skill-build/
+tmp/
+.env
+.env.*
 *.log
 npm-debug.log*
 yarn-debug.log*
