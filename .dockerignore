@@ -1,25 +1,66 @@
-**/.classpath
-**/.dockerignore
-**/.env
+# Git & Version Control
 **/.git
 **/.gitignore
+
+# Environment & Secrets
+**/.env
+**/.env.local
+**/.env.*.local
+**/secrets.dev.yaml
+**/values.dev.yaml
+
+# IDE & Editor
+**/.vscode
+**/.idea
+**/.classpath
 **/.project
 **/.settings
 **/.toolstarget
 **/.vs
-**/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
+**/Thumbs.db
+
+# Build Artifacts
+**/dist
+**/build
+**/obj
 **/bin
-**/charts
-**/docker-compose*
-**/compose*
-**/Dockerfile*
+
+# Node
 **/node_modules
 **/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-LICENSE
-README.md
+**/npm-debug.log*
+**/.npm
+
+# TypeScript
+**/*.tsbuildinfo
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Package Management
+**/yarn.lock
+**/package-lock.json.backup
+
+# Test Coverage
+**/coverage
+**/.nyc_output
+
+# Docker
+**/.dockerignore
+**/Dockerfile*
+**/docker-compose*.yaml
+**/compose*.yaml
+
+# Misc
+**/LICENSE
+**/README.md
+**/CODEBASE_ASSESSMENT.md
+**/AGENTS.md
+**/docs/
+**/.gitpod.yml
+**/.gitpod.Dockerfile
+**/charts/
+**/scripts/
+**/tmp/
+**/.claude/

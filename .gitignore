@@ -1,6 +1,94 @@
+# Dependencies
 node_modules/
+package-lock.json.backup
+yarn.lock
+
+# Build & Distribution
 dist/
-coverage/
+build/
 *.tsbuildinfo
+.next/
+out/
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+*.code-workspace
 .DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+.cache/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+
+# Runtime Data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Docker
+.docker/
+docker-compose.override.yaml
+*.dockerignore.local
+
+# Git
+.git/
+.gitattributes
+
+# Misc
+.claude/
+.codex-skill-build/
+.cloudrun.json.local
+cloudbuild.local.yaml
+
+# Local development
+.vite/
+.turbo/
+
+# Never commit
+secrets.dev.yaml
+values.dev.yaml
+*.pem
+*.key
+*.p8
+*.p12

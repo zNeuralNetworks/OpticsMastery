@@ -1,4 +1,0 @@
-interface:
-  display_name: "Arista EOS CLI"
-  short_description: "EOS CLI syntax and troubleshooting"
-  default_prompt: "Use $eos-cli to provide production-correct Arista EOS CLI guidance with verification commands."

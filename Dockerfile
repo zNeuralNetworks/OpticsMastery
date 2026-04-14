@@ -6,11 +6,14 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies (including dev)
 RUN npm ci
 
 # Copy source code
 COPY . .
+
+# Verify TypeScript and run tests
+RUN npm run typecheck && npm run test:ci
 
 # Build the application
 RUN npm run build
@@ -23,8 +26,14 @@ WORKDIR /app
 # Install a lightweight HTTP server to serve static files
 RUN npm install -g serve
 
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+
 # Copy built files from builder
-COPY --from=builder /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+
+# Switch to non-root user
+USER nodejs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
@@ -34,7 +43,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 EXPOSE 3000
 
 # Cloud Run requires PORT environment variable
-ENV PORT=3000
+ENV PORT=3000 NODE_ENV=production
 
 # Serve the built app
 CMD ["serve", "-s", "dist", "-l", "3000"]

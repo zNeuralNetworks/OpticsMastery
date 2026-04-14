@@ -113,3 +113,9 @@ git status
 git add .
 git commit -m "initial commit"
 git push -u origin main
+
+.gitignore
+node_modules
+dist
+.env
+.DS_Store

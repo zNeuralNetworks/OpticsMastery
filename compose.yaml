@@ -1,6 +1,45 @@
+version: '3.8'
+
 services:
-  opticsmaster:
-    image: opticsmaster
+  app:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile.dev
+    container_name: optics-master-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_HMR_HOST=localhost
+      - VITE_HMR_PORT=5173
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    command: npm run dev
+    develop:
+      watch:
+        - path: ./src
+          action: rebuild
+        - path: ./components
+          action: rebuild
+        - path: ./services
+          action: rebuild
+        - path: ./context
+          action: rebuild
+        - path: ./hooks
+          action: rebuild
+        - path: ./features
+          action: rebuild
+        - path: ./constants.ts
+          action: rebuild
+        - path: ./types.ts
+          action: rebuild
+        - path: ./App.tsx
+          action: rebuild
+        - path: ./index.tsx
+          action: rebuild
+        - path: ./vite.config.ts
+          action: rebuild
+        - path: ./tsconfig.json
+          action: rebuild
