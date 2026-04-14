@@ -35,16 +35,11 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 # Switch to non-root user
 USER nodejs
 
-# Expose port (Cloud Run default)
+# Expose Cloud Run port
 EXPOSE 8080
 
-# Cloud Run requires PORT environment variable (default to 8080)
-ENV PORT=8080 NODE_ENV=production
+# Runtime env
+ENV NODE_ENV=production
 
-# Health check (uses PORT env var dynamically)
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "const port = process.env.PORT || 8080; require('http').get('http://localhost:' + port, (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-
-# Serve the built app - uses PORT environment variable
-# Use sh -c to expand environment variables
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]
+# Serve the built app and bind correctly for Cloud Run
+CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}"]
