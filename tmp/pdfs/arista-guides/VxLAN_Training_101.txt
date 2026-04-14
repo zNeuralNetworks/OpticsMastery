@@ -1,0 +1,347 @@
+VXLAN Introduction
+  Virtualization in Networks
+
+     Akhilesh TK, Jainam Parikh
+
+
+
+                        recommended to be run in the slideshow mode
+Agenda
+• What is Virtualization? Why do we need it?
+• What is LAN?
+• Underlay - Overlay Discussion
+• Introduction to VXLAN
+• Packet Format
+• Terminologies
+• Packet Walkthrough
+• Operating Modes
+• Head End Replication (HER)
+• Basic Configuration
+• Platform Support for VXLAN
+                                   Arista Confidential   2
+What is Virtualization?
+Virtualization is the process of giving a “system” a property it does not have.
+
+Example: VLAN, a logical overlay, is virtualizing the concept of LAN:
+• By giving it the ability to house multiple networks and segregate them!
+• Groups together a subset of devices that share a physical LAN.
+
+
+Now, does virtualization simplify operations?
+It may be true for one hat and
+completely false for another.
+
+“You cannot have a pie and eat it at the same time”
+                                                                              imgflip.com
+
+
+                                     Arista Confidential                                3
+Why do we need it in networks? (RFC 7364)
+We need VIRTUALIZATION in networks to:
+1. Allow services move around the data center, and the right
+   resources must follow to keep everything running smoothly.
+2. Enable VMs to move between servers and DCs (0 downtime),
+   with IP/MAC addresses intact, and without subnet limits.
+3. Allow tenants need to use any addresses they want in their
+   networks, even if other tenants use the same ones.
+4. Allow tenants need to use any addresses they want in their
+   networks, even if the underlying DCN use the same ones.
+5. Enable tenant identification.
+
+                         Arista Confidential                4
+            question for you: What is LAN?
+                    a broadcast domain.
+
+Historically, a broadcast domain has always been physically bound to
+a location.
+
+But what if a company like,          , wants to use the same IP pool
+10.0.0.0/8 in Europe and the USA? i.e. extend the broadcast domain,
+aka LAN?
+
+
+                             Arista Confidential                       5
+the answer is VLAN with an X. (you all are here
+                to learn it lol.)
+   But, before we learn it, let’s have a small
+                  discussion:
+
+
+ (request you to run slideshow mode for the next slide, it’s a small
+                            animation)
+
+                            Arista Confidential                        6
+                                          this is
+                                          optional
+
+
+(                     (
+    ✈ Source: SJC (77) ✉(7)Source: 5453 Great America Parkway, 95054, CA, USA
+  Destination: DUB                Destination: 2 George’s Dock, IFSC, Dublin 1, Ireland               ))
+                           Used for (tenant) identification
+                                                                                         Post Office N/W is Overlay
+                                                                                           Airport N/W is Underlay
+                                                     Source: SJC
+
+
+                          77
+                             7
+                             ✉                          ✈
+                                              Destination: DUB
+                                                                                77
+                                                                                     7
+                                                                                     ✉
+              7                                                                                   7
+    TAC-7
+            ✉                                                                                    ✉          TAC-7
+
+ 🕴
+🕴
+TEST-20
+          🏢                      🛫                                         🛬                      🏢        🕴🕴
+                                                                                                               TEST-20
+
+       5453 Great                   SJC                                    DUB                   2 George's
+      America Pkwy
+                                   🇺🇸
+                                    77:7
+                                                                           🇮🇪
+                                                                            77:7
+                                                                                                 Dock, IFSC
+
+                                   2020:20           Arista Confidential   2020:20                                  7
+Underlay/Overlay Networks:
+UN: An underlay network is the physical infrastructure, including switches and
+routers, that supports the virtual network by transporting data packets between
+devices. (synonymous to the airport network we just saw)
+ • Underlay Networks can be: BGP (i/e), OSPF, RIP, ISIS or even static routing, etc.
+ • The overlay network will be dependent on this Underlay Network for
+    operations.
+
+ON: An overlay network is a virtual network of nodes and links built on top of an
+existing network, allowing new services without reconfiguring the entire design.
+(synonymous to the post-office network we just saw)
+ • Overlay Networks can be: L2TP, VXLAN, NVGRE, VPLS, MPLS, etc.
+ • We will be looking into VXLAN.
+
+                                    Arista Confidential                            8
+                  8]
+               734
+          FC
+        [R
+   AN
+ XL
+V
+
+
+
+
+                   Arista Confidential   9
+Introduction to VXLAN (contd.)
+• Virtual eXtensible Local Area Network (that’s how the RFC spells it ☺)
+• VXLAN is a Layer 2 overlay scheme on a Layer 3 underlay network.
+• Each overlay is termed a VXLAN segment.
+• Only VMs within the same VXLAN VLAN can communicate with each other.
+• Each VXLAN segment is identified through a 24-bit segment ID, termed the
+  "VXLAN Network Identifier (VNI)".
+• This allows up to 16 M VXLAN segments to coexist within the same
+  administrative domain.
+• Independent STP domains across sites.
+
+
+
+                                    Arista Confidential                    10
+Packet Format
+                                                                  VXLAN adds:
+                                                                   ● Outer L2 Header
+                                                                   ● Outer L3 Header
+                                                                   ● UDP Header
+                                                                   ● VXLAN Header
+
+
+
+
+                                                          https://www.oreilly.com/library/view/vmware-nsx-
+                                      cookbook/9781782174257/7d2a65f0-fadc-4bb9-a507-b25db0886e51.xhtml
+
+                Arista Confidential                                                                     11
+Actual Packet
+
+
+
+
+                Arista Confidential   12
+Terminologies:
+•   Virtual Network Identifier (VNI) (or VXLAN Segment ID)
+    A 24-bit number that distinguishes between the VLANs carried on a VTI (via a UDP
+    socket)
+    It is used to multiplex multiple VLANs over a single VTI (UDP socket)
+    24-bit VNI = 224 = 16777216 = 16 Million IDs
+•   VXLAN Segment (VLAN 7 or 20 in the discussion)
+    A network-wide layer-2 domain implemented as an overlay network of VTEPs
+    interconnected using VXLAN Tunnel Interfaces
+
+
+
+
+                               https://slideplayer.com/slide/10617757/#google_vignette
+
+                                          Arista Confidential                            13
+Terminologies (contd.):
+•   VXLAN Tunnel Interface (VTI)
+    Switchport linked to a UDP socket that can be shared between many VLANs
+    When packets are transmitted over a VTI, packets are encapsulated in VXLAN
+    header.
+    Packets arriving on the VTI (via the UDP socket, based on their UDP destination
+    port) are demultiplexed into a VLAN for bridging.
+    A 24-bit VNI within the packet determines which VLAN the packet is mapped to for
+    bridging.
+•   Virtual Tunnel Endpoint (VTEP)
+    An entity that originates and/or terminates VXLAN tunnels and and forwards traffic
+    on them.
+    A VTEP is what uses the VTI to initiate and establish a VXLAN tunnel.
+
+                                     Arista Confidential                             14
+Components of the VXLAN packet:
+• UDP Port:
+   ○ IANA assigned 4789 as the VXLAN UDP port, but it can be changed via CLI.
+   ○ UDP source port number is calculated using a hash of fields from the inner
+      packet.
+• VTEP IP:
+   ○ VTEP IP is the IP address of either the source and destination of the virtual
+      tunnel.
+   ○ This IP is used as the SRC/DST IP in the outer L3 header based on the floodlist.
+• VNI ID:
+   ○ A 24-bit VNI ID is what is used to identify the L2 segment.
+   ○ An egress VTEP uses this VNI to correctly identify the L2 segment of the
+      packet, i.e. what VLAN should the packet be delivered to.
+
+                    (IANA manages global IP address allocation, autonomous system numbers, and the root zone of the DNS.)
+
+                                            Arista Confidential                                                       15
+                                Click here to access the actual PCAPs:
+                      (i) naked-icmp-T1H1.pcap     (iii) encaped-icmp-L2.pcap
+                      (ii) encaped-icmp-L1.cpap    (iv) naked-icmp-T1H3.pcap
+
+
+
+
+Arista Confidential
+
+                                                                                VXLAN Packet Walkthrough: (Exercise):
+
+
+
+
+16
+Walkthrough: How does it work? (encap):
+T1H1 pings T1H3:
+1. MAP: The first-hop VTEP, L1, maps where the encapsulated packet should be
+   sent to reach its intended destination; VLAN (7) to VNI (77) mapping, remote
+   VTEP IP (2.2.2.2)
+2. ENCAP: Original packet is encapsulated by the first-hop ingress network device,
+   called the VTEP & Prepends a VXLAN header to the packet (including the VNI)
+3. FORWARD: The packet is forwarded by the underlay (i.e., the IP network) based
+   entirely on its outer address, to a remote egress VTEP.
+   Picks a source UDP port based on the hash of the inner MAC header
+4. Then at the egress VTEP, L2, the packet is decapsulated and then sent to the
+   destination.
+The packet based on the encapsulation header and can be oblivious to the
+payload that is carried inside. (remember this)
+                                   Arista Confidential                           17
+Walkthrough: How does it work? (decap):
+Idea behind the decap in overlays is very simple:
+ 1. DECAP: If the outer destination IP (2.2.2.2) and MAC (DD) matches the last-hop
+    overlay device remembers the VNI (77) of the received encap’d packet (in the
+    VXLAN header) and decapsulates it.
+ 2. MAP: Original packet is decapsulated by the last-hop egress VTEP, L2.
+    Lookup the VLAN tag (if present) or the VNI (77) of the packet in the VNI-to-
+    VLAN map, finds it to be mapped to VLAN 7.
+ 3. FORWARD: The packet is forwarded to the end host based on the MAC address
+    table and VLAN (7) broadcast domain.
+
+
+The packet based on the encapsulation header and can be oblivious to the
+payload that is carried inside. (remember this)
+
+                                   Arista Confidential                          18
+Arista Confidential   19
+Bridging vs Routing:
+Two ways of implementing VXLAN based on use-case:
+• Bridging:
+   – End hosts communicating are on the same subnet,
+   – No gateway required on the VTEP.
+   – Basic VXLAN, enables stretching Layer 2 domains over an L3
+      underlay.
+• Routing:
+   – End hosts communicating are on different subnets,
+   – A gateway is required on the VTEPs (all or some) (Direct or Indirect).
+   – Capability to route between these Layer 2 domains over an L3
+     underlay.
+                                Arista Confidential                      20
+VXLAN Operating Modes
+•   For VXLAN, the approach specified in the RFC is based on IP multicast.
+•   This approach means that the underlying IP network used to transport
+    VXLAN encapsulated traffic must support IP multicast.
+•   Other modes can be Flood Proxy Mode or HER (more of it on next slide).
+•   HER is the preferred operating mode in Arista devices.
+
+
+
+
+                                  Arista Confidential                        21
+VXLAN Operating Modes (Head End Replication, HER):
+•   Arista has introduced a feature referred to as “Head End Replication” (HER):
+    – HER takes the incoming broadcast, multicast, and unknown unicast traffic
+      (BUM) and sends an individual unicast copy to each of the VTEPs receiving
+      traffic for a given VNI.
+•   HER is one of the operating modes of VXLAN.
+•   In this mode, the ingress (source) VTEP encapsulates the frame and then
+    replicates the frame to each VXLAN tunnel in the network.
+•   In order to transparently support layer-2 traffic, each VTEP must handle the
+    forwarding of broadcast and multicast traffic as well as ensure previously
+    “unseen” MAC addresses and their “locations” are learned.
+•   HER is done in hardware.
+                                    Arista Confidential                            22
+https://blog.sdn.clinic/2017/09/specifics-and-history-of-a-freifunk-network/
+
+
+                        Arista Confidential                                    23
+VXLAN Basic Configuration for EOS:
+                                 Source-interface can only be a loopback interface
+
+
+
+
+interface vxlan1                        VXLAN traffic is carried over UDP port 4789
+
+    vxlan source-interface loopback <lo-int>
+    vxlan udp-port 4789                 One-to-one mapping between vlan and vni
+
+    vxlan vlan <vlan-id> vni <vni-id>
+    vxlan flood vtep <remote-vtep-ip> <remote-vtep-ip>
+
+                                       To encapsulate BUM traffic and replicate to remote VTEPs
+
+
+                                   Arista Confidential                                       24
+Arista Confidential   25
+Thank you!
+
+
+
+
+             Arista Confidential   26
+References:
+• https://www.arista.com/assets/data/pdf/TechBulletins/VXLAN_Overvie
+  w.pdf
+• https://www.arista.com/en/um-eos/eos-vxlan-introduction
+• https://www.arista.com/assets/data/pdf/Whitepapers/VXLAN_Scaling_
+  Data_Center_Designs.pdf
+• https://www.theregister.com/2011/08/30/vmware_cisco_vxlan_spec/
+
+
+
+
+                             Arista Confidential                   27
+

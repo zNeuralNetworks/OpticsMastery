@@ -1,0 +1,6 @@
+services:
+  opticsmaster:
+    image: opticsmaster
+    build:
+      context: .
+      dockerfile: ./Dockerfile

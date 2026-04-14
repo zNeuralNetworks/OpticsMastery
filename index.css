@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Force tabular numbers for all mono text to ensure alignment in tables/calculators */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Micro Labels */
+  .micro-label {
+    @apply text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400;
+  }
+}
+
+:root {
+  --aom-accent: #6366f1;
+  --aom-text-sub: #a1a1aa;
+  --aom-border: #27272a;
+
+  /* Cluster designer design tokens (used by src/features/cluster-designer) */
+  --color-space: #0b1220;
+  --color-surface: #111a2b;
+  --color-surface-elevated: #162338;
+  --color-gridline: #22314a;
+  --color-border: #2c3d5b;
+  --color-ink: #e6edf6;
+  --color-muted: #9fb2cc;
+  --color-label: #6f87a6;
+  --color-sapphire: #3b82f6;
+  --color-amethyst: #8b5cf6;
+  --color-indigo: #6366f1;
+  --color-ember: #ef4444;
+  --color-cyan: #06b6d4;
+  --color-emerald: #10b981;
+  --glow-sapphire: rgba(59, 130, 246, 0.25);
+  --glow-amethyst: rgba(139, 92, 246, 0.25);
+  --glow-emerald: rgba(16, 185, 129, 0.25);
+  --glow-ember: rgba(239, 68, 68, 0.22);
+  --glow-cyan: rgba(6, 182, 212, 0.22);
+  --glow-indigo: rgba(99, 102, 241, 0.22);
+}
+
+@layer components {
+  /* Cluster designer component utilities */
+  .workspace-shell {
+    @apply min-h-screen bg-grid bg-[size:40px_40px];
+  }
+
+  .workspace-header {
+    @apply rounded-[28px] border border-border/90 bg-surface/85 shadow-surface backdrop-blur;
+  }
+
+  .architecture-card {
+    @apply rounded-[24px] border border-border/90 bg-surface shadow-surface backdrop-blur transition duration-200;
+  }
+
+  .architecture-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 22px 42px rgba(0, 0, 0, 0.28);
+  }
+
+  .architecture-card--elevated {
+    @apply bg-surface-elevated shadow-elevated;
+  }
+
+  .architecture-card--active {
+    @apply ring-1 ring-white/5;
+  }
+
+  .workspace-section {
+    @apply rounded-[20px] border border-border/80 bg-space/35;
+  }
+
+  .section-kicker {
+    @apply text-[11px] uppercase tracking-[0.3em] text-label;
+  }
+
+  .data-label {
+    @apply text-[11px] uppercase tracking-[0.24em] text-label;
+  }
+
+  .technical-value {
+    @apply font-mono text-ink;
+  }
+
+  .mono-pill {
+    @apply inline-flex items-center rounded-full border border-border px-3 py-1 font-mono text-[12px] text-muted;
+  }
+
+  .card-inset {
+    @apply rounded-[20px] border border-border bg-space;
+  }
+
+  .card-subtle {
+    @apply rounded-[20px] border border-border/80 bg-surface-elevated;
+  }
+
+  .input-field {
+    @apply w-full rounded-[18px] border border-border bg-space px-4 py-3 text-sm text-ink outline-none transition focus:border-sapphire focus:ring-1 focus:ring-sapphire/35;
+  }
+
+  .choice-tile {
+    @apply rounded-[18px] border border-border bg-space px-4 py-3 text-left text-sm text-muted transition;
+  }
+
+  .choice-tile:hover {
+    @apply border-border text-ink;
+  }
+
+  .choice-tile--selected {
+    @apply border-sapphire bg-sapphire/10 text-ink;
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.18);
+  }
+
+  .choice-tile--disabled {
+    @apply cursor-not-allowed border-border/50 text-muted/45;
+  }
+
+  .info-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-space px-3 py-1.5 text-xs text-muted transition;
+  }
+
+  .info-chip--active {
+    @apply border-sapphire bg-sapphire/10 text-ink;
+  }
+
+  .info-dot {
+    @apply h-2 w-2 rounded-full;
+  }
+
+  .tooltip-panel {
+    @apply pointer-events-none absolute z-20 w-64 rounded-[16px] border border-border bg-surface-elevated p-3 text-xs leading-5 text-muted opacity-0 shadow-elevated transition;
+  }
+
+  .metric-bar {
+    @apply relative h-3 overflow-hidden rounded-full border border-border bg-space;
+  }
+
+  .metric-bar-fill {
+    @apply absolute inset-y-0 left-0 rounded-full;
+  }
+
+  .disclosure-button {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-space px-3 py-1.5 text-xs text-muted transition hover:border-sapphire/50 hover:text-ink;
+  }
+
+  ::selection {
+    background: rgba(59, 130, 246, 0.22);
+    color: var(--color-ink);
+  }
+}
+
+html, body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Refined Mono Readability Fix */
+.aom-mono, .font-mono { 
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important; 
+  font-size: 1.05em !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.aom-accent { color: var(--aom-accent) !important; }
+.aom-text-sub { color: var(--aom-text-sub) !important; }
+.aom-border { border-color: var(--aom-border) !important; }
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Fix for SVG diagram elements */
+.aom-diagram-canvas text {
+  user-select: none;
+}
+.aom-diagram-canvas path, .aom-diagram-canvas line {
+  transition: stroke 0.3s ease, opacity 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hardware-Inspired Utilities */
+.hw-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+.hw-led-green { color: #22c55e; background-color: #22c55e; }
+.hw-led-red { color: #ef4444; background-color: #ef4444; }
+.hw-led-amber { color: #f59e0b; background-color: #f59e0b; }
+
+.hw-panel {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.hw-grid-bg {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.bento-item {
+  @apply bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/5 p-8 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30;
+}
+
+.bento-item-large {
+  @apply md:col-span-2 md:row-span-2;
+}
+
+/* Print Styles for Export to PDF */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    overflow: visible !important;
+  }
+  
+  /* Hide UI elements */
+  aside, .no-print, button {
+    display: none !important;
+  }
+
+  /* Reset Layout for Print */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Specific Lab Adjustments */
+  .h-\[calc\(100vh-100px\)\] {
+    height: auto !important;
+  }
+  
+  .overflow-y-auto, .overflow-hidden {
+    overflow: visible !important;
+  }
+  
+  /* Ensure SVGs print */
+  svg {
+      break-inside: avoid;
+  }
+}

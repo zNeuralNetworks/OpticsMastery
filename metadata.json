@@ -1,0 +1,5 @@
+{
+  "name": "Optics Master",
+  "description": "An interactive tool for data center optics, cabling, and AI cluster fabric planning, featuring Arista 7060X6 and 7800R4 sizing engines.",
+  "requestFramePermissions": []
+}

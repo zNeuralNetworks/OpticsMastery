@@ -1,0 +1,164 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-space: #0b1220;
+  --color-surface: #111a2b;
+  --color-surface-elevated: #162338;
+  --color-gridline: #22314a;
+  --color-border: #2c3d5b;
+  --color-ink: #e6edf6;
+  --color-muted: #9fb2cc;
+  --color-label: #6f87a6;
+  --color-sapphire: #3b82f6;
+  --color-amethyst: #8b5cf6;
+  --color-indigo: #6366f1;
+  --color-ember: #ef4444;
+  --color-cyan: #06b6d4;
+  --color-emerald: #10b981;
+  --glow-sapphire: rgba(59, 130, 246, 0.25);
+  --glow-amethyst: rgba(139, 92, 246, 0.25);
+  --glow-emerald: rgba(16, 185, 129, 0.25);
+  --glow-ember: rgba(239, 68, 68, 0.22);
+  --glow-cyan: rgba(6, 182, 212, 0.22);
+  --glow-indigo: rgba(99, 102, 241, 0.22);
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.09), transparent 28%),
+    radial-gradient(circle at 80% 0%, rgba(139, 92, 246, 0.08), transparent 26%),
+    radial-gradient(circle at 40% 100%, rgba(16, 185, 129, 0.06), transparent 20%),
+    linear-gradient(180deg, #09101c 0%, var(--color-space) 42%, #0d1421 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer base {
+  ::selection {
+    background: rgba(59, 130, 246, 0.22);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .workspace-shell {
+    @apply min-h-screen bg-grid bg-[size:40px_40px];
+  }
+
+  .workspace-header {
+    @apply rounded-[28px] border border-border/90 bg-surface/85 shadow-surface backdrop-blur;
+  }
+
+  .architecture-card {
+    @apply rounded-[24px] border border-border/90 bg-surface shadow-surface backdrop-blur transition duration-200;
+  }
+
+  .architecture-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 22px 42px rgba(0, 0, 0, 0.28);
+  }
+
+  .architecture-card--elevated {
+    @apply bg-surface-elevated shadow-elevated;
+  }
+
+  .architecture-card--active {
+    @apply ring-1 ring-white/5;
+  }
+
+  .workspace-section {
+    @apply rounded-[20px] border border-border/80 bg-space/35;
+  }
+
+  .section-kicker {
+    @apply text-[11px] uppercase tracking-[0.3em] text-label;
+  }
+
+  .data-label {
+    @apply text-[11px] uppercase tracking-[0.24em] text-label;
+  }
+
+  .technical-value {
+    @apply font-mono text-ink;
+  }
+
+  .mono-pill {
+    @apply inline-flex items-center rounded-full border border-border px-3 py-1 font-mono text-[12px] text-muted;
+  }
+
+  .card-inset {
+    @apply rounded-[20px] border border-border bg-space;
+  }
+
+  .card-subtle {
+    @apply rounded-[20px] border border-border/80 bg-surface-elevated;
+  }
+
+  .input-field {
+    @apply w-full rounded-[18px] border border-border bg-space px-4 py-3 text-sm text-ink outline-none transition focus:border-sapphire focus:ring-1 focus:ring-sapphire/35;
+  }
+
+  .choice-tile {
+    @apply rounded-[18px] border border-border bg-space px-4 py-3 text-left text-sm text-muted transition;
+  }
+
+  .choice-tile:hover {
+    @apply border-border text-ink;
+  }
+
+  .choice-tile--selected {
+    @apply border-sapphire bg-sapphire/10 text-ink;
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.18);
+  }
+
+  .choice-tile--disabled {
+    @apply cursor-not-allowed border-border/50 text-muted/45;
+  }
+
+  .info-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-space px-3 py-1.5 text-xs text-muted transition;
+  }
+
+  .info-chip--active {
+    @apply border-sapphire bg-sapphire/10 text-ink;
+  }
+
+  .info-dot {
+    @apply h-2 w-2 rounded-full;
+  }
+
+  .tooltip-panel {
+    @apply pointer-events-none absolute z-20 w-64 rounded-[16px] border border-border bg-surface-elevated p-3 text-xs leading-5 text-muted opacity-0 shadow-elevated transition;
+  }
+
+  .metric-bar {
+    @apply relative h-3 overflow-hidden rounded-full border border-border bg-space;
+  }
+
+  .metric-bar-fill {
+    @apply absolute inset-y-0 left-0 rounded-full;
+  }
+
+  .disclosure-button {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-space px-3 py-1.5 text-xs text-muted transition hover:border-sapphire/50 hover:text-ink;
+  }
+}

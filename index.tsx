@@ -1,0 +1,28 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+import { NavigationProvider } from './context/NavigationContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { BOMProvider } from './context/BOMContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <NavigationProvider>
+          <BOMProvider>
+            <App />
+          </BOMProvider>
+        </NavigationProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
+  </React.StrictMode>
+);
