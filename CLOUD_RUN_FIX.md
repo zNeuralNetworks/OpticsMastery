@@ -19,10 +19,10 @@ the PORT=8080 environment variable
 **Changes:**
 - Changed EXPOSE from 3000 → 8080
 - Changed ENV PORT default from 3000 → 8080
-- Updated CMD to use shell expansion: `CMD ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]`
+- Updated CMD to use shell expansion and bind all interfaces: `CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}"]`
   - This allows PORT environment variable to override default
   - Falls back to 8080 if PORT not set
-- Updated HEALTHCHECK to use dynamic port from environment variable
+- Removed the Dockerfile health check; Cloud Run manages revision startup/readiness from the configured container port.
 
 **Before:**
 ```dockerfile
@@ -35,14 +35,13 @@ HEALTHCHECK ... CMD node -e "require('http').get('http://localhost:3000', ...)
 **After:**
 ```dockerfile
 EXPOSE 8080
-ENV PORT=8080 NODE_ENV=production
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]
-HEALTHCHECK ... CMD node -e "const port = process.env.PORT || 8080; require('http').get('http://localhost:' + port, ...)
+ENV NODE_ENV=production
+CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}"]
 ```
 
 ### 2. Updated cloudbuild.yaml
 **Changes:**
-- Replaced GKE deploy (gke-deploy) with Cloud Run deploy (cloud-builders/run)
+- Replaced GKE deploy (`gke-deploy`) with `gcloud run deploy` through `gcr.io/cloud-builders/gcloud`
 - Updated image registry to use Artifact Registry format: `${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}`
 - Added Cloud Run specific flags:
   - `--port 8080`: Tells Cloud Run to listen on 8080
@@ -64,8 +63,9 @@ HEALTHCHECK ... CMD node -e "const port = process.env.PORT || 8080; require('htt
 
 **After:**
 ```yaml
-- name: 'gcr.io/cloud-builders/run'
+- name: 'gcr.io/cloud-builders/gcloud'
   args:
+    - 'run'
     - 'deploy'
     - '${_SERVICE_NAME}'
     - '--image'
@@ -133,10 +133,7 @@ The container now properly respects:
 ## Health Check
 
 The health check now:
-1. Reads PORT from environment variable
-2. Falls back to 8080 if not set
-3. Makes HTTP request to localhost:PORT
-4. Validates HTTP 200 response
+Cloud Run validates startup against the configured container port. For local Docker Compose production checks, `compose.prod.yaml` keeps an explicit HTTP health check that reads `PORT` and falls back to 8080.
 
 ## Next Deploy
 

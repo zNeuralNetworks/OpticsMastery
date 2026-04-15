@@ -18,10 +18,10 @@
    - ENV PORT: 3000 → 8080
    - CMD: ["serve", "-s", "dist", "-l", "3000"]
       → ["sh", "-c", "serve -s dist -l ${PORT:-8080}"]
-   - HEALTHCHECK: Uses dynamic PORT from environment
+   - Dockerfile health check removed; Cloud Run validates the configured port
 
 2. ✅ cloudbuild.yaml
-   - Deploy step: Changed from gke-deploy → cloud-builders/run
+   - Deploy step: Changed from gke-deploy → cloud-builders/gcloud running gcloud run deploy
    - Added --port 8080 flag
    - Added --memory 512Mi and --cpu 1 flags
    - Updated image registry to Artifact Registry format
@@ -39,7 +39,7 @@
 ✓ Respects Cloud Run default PORT=8080
 ✓ Flexible port configuration (can override with -e PORT=custom)
 ✓ Uses Cloud Run specific deployment (not Kubernetes)
-✓ Health checks now validate on correct port
+✓ Cloud Run startup validation now targets the correct port
 ✓ Proper resource allocation (512Mi memory, 1 CPU)
 ✓ Artifact Registry integration
 ✓ All port references consistent
@@ -79,7 +79,7 @@ Commit and push:
   - Updated cloudbuild.yaml to use Cloud Run deploy
   - Added resource allocation (512Mi memory, 1 CPU)
   - Updated compose.prod.yaml for port 8080
-  - Fixed HEALTHCHECK for dynamic port"
+  - Removed Dockerfile HEALTHCHECK and rely on Cloud Run port startup validation"
   
   git push origin main
 
@@ -119,4 +119,3 @@ Documentation:     CLOUD_RUN_FIX.md
 Status:            Ready for deployment
 
 Next action:       git push origin main
-

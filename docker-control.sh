@@ -6,7 +6,8 @@ set -e
 
 CONTAINER_NAME="optics-master"
 IMAGE_NAME="optics-master:latest"
-PORT="3000"
+HOST_PORT="${HOST_PORT:-${PORT:-8080}}"
+CONTAINER_PORT="${CONTAINER_PORT:-8080}"
 
 # Color output
 RED='\033[0;31m'
@@ -28,7 +29,7 @@ print_info() {
 }
 
 start_container() {
-    print_info "Starting Optics Master on port $PORT..."
+    print_info "Starting Optics Master on host port $HOST_PORT..."
     
     # Check if already running
     if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
@@ -45,7 +46,8 @@ start_container() {
     # Run container
     docker run -d \
         --name "$CONTAINER_NAME" \
-        -p "$PORT:3000" \
+        -p "$HOST_PORT:$CONTAINER_PORT" \
+        -e "PORT=$CONTAINER_PORT" \
         --restart unless-stopped \
         "$IMAGE_NAME"
     
@@ -53,9 +55,9 @@ start_container() {
     sleep 3
     
     # Verify health
-    if curl -s http://localhost:$PORT > /dev/null 2>&1; then
+    if curl -s http://localhost:$HOST_PORT > /dev/null 2>&1; then
         print_status "Container started successfully"
-        print_info "Access at: http://localhost:$PORT"
+        print_info "Access at: http://localhost:$HOST_PORT"
     else
         print_error "Container may not have started properly. Check logs with: $0 logs"
         return 1
@@ -133,7 +135,7 @@ status_container() {
         print_info "Port mapping: $PORT_INFO"
         
         # Show access URL
-        print_info "Access at: http://localhost:$PORT"
+        print_info "Access at: http://localhost:$HOST_PORT"
     elif docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
         print_error "Container exists but is stopped"
         print_info "To start: $0 start"
@@ -176,7 +178,7 @@ case "${1:-status}" in
         echo "Usage: $0 [command]"
         echo ""
         echo "Commands:"
-        echo "  start       - Start container (default port 3000)"
+        echo "  start       - Start container (default host port 8080)"
         echo "  stop        - Stop and remove container"
         echo "  restart     - Restart container"
         echo "  logs        - View container logs (live)"
@@ -189,7 +191,8 @@ case "${1:-status}" in
         echo "  $0 start                 # Start container"
         echo "  $0 logs                  # View live logs"
         echo "  $0 stop                  # Stop container"
-        echo "  PORT=8080 $0 start       # Start on custom port"
+        echo "  HOST_PORT=3000 $0 start  # Serve locally at http://localhost:3000"
+        echo "  CONTAINER_PORT=9090 $0 start # Override container listen port"
         echo ""
         exit 1
         ;;
