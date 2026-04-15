@@ -41,7 +41,7 @@ CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}"]
 
 ### 2. Updated cloudbuild.yaml
 **Changes:**
-- Replaced GKE deploy (`gke-deploy`) with `gcloud run deploy` through `gcr.io/cloud-builders/gcloud`
+- Replaced GKE deploy (`gke-deploy`) with `gcloud run deploy` through the Cloud SDK builder
 - Updated image registry to use Artifact Registry format: `${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}`
 - Added Cloud Run specific flags:
   - `--port 8080`: Tells Cloud Run to listen on 8080
@@ -63,7 +63,8 @@ CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${PORT:-8080}"]
 
 **After:**
 ```yaml
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
   args:
     - 'run'
     - 'deploy'

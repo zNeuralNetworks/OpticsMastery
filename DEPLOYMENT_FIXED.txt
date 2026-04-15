@@ -21,7 +21,7 @@
    - Dockerfile health check removed; Cloud Run validates the configured port
 
 2. ✅ cloudbuild.yaml
-   - Deploy step: Changed from gke-deploy → cloud-builders/gcloud running gcloud run deploy
+   - Deploy step: Changed from gke-deploy → Cloud SDK builder running gcloud run deploy
    - Added --port 8080 flag
    - Added --memory 512Mi and --cpu 1 flags
    - Updated image registry to Artifact Registry format

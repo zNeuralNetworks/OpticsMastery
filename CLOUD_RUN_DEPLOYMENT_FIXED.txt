@@ -36,7 +36,7 @@ FILES MODIFIED (3 files):
 
 2. cloudbuild.yaml
    ✓ Deploy step: GKE → Cloud Run
-   ✓ Updated to use gcr.io/cloud-builders/gcloud with gcloud run deploy
+   ✓ Updated to use the Cloud SDK builder with gcloud run deploy
    ✓ Added --port 8080 flag
    ✓ Added --memory, --cpu, --timeout flags
    ✓ Updated image registry to Artifact Registry format
@@ -84,7 +84,8 @@ BEFORE:
 
 AFTER:
   # Step 3 now uses Cloud Run deploy
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
