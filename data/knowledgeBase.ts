@@ -78,6 +78,14 @@ export const LEARNING_GUIDES: Record<string, LearningGuide> = {
     commonMistake: 'Thinking of 400G and 800G as single-channel links instead of lane bundles.',
     nextStep: 'Move into form factors and breakout mapping.',
   },
+  HARDWARE_REFERENCE: {
+    title: 'Hardware Reference',
+    level: 'Advanced',
+    mentalModel: 'Interface type and gearbox behavior are channel-allocation rules. A speed label is not enough to prove breakout validity.',
+    whyItMatters: 'Platform-facing optics decisions depend on electrical channel count, logical-port limits, gearbox domains, and adjacent-port impacts.',
+    commonMistake: 'Assuming any QSFP-DD or QSFP56 optic can be used interchangeably because the printed aggregate speed looks compatible.',
+    nextStep: 'Use the Hardware tab and Cable Configurator gearbox reference to inspect interface-type consequences.',
+  },
   FORM_FACTORS: {
     title: 'Form Factor Hardware Note',
     level: 'Basics',
@@ -122,6 +130,7 @@ export const CONCEPT_DEFINITIONS: Record<string, string> = {
   LANE_DENSITY: "Comparison of electrical lane counts (1, 4, or 8) used in different transceiver generations (100G-800G) to drive aggregate bandwidth.",
   FORM_FACTORS: "Physical module shapes (SFP/QSFP/OSFP) and their specific thermal and SerDes speed constraints.",
   BREAKOUT_LOGIC: "The ability of a single high-speed switch cage to be logically partitioned into multiple lower-speed host ports.",
+  HARDWARE_REFERENCE: "Dense reference for channel/SerDes terminology, interface types such as 100G-2 and 100G-4, gearbox domains, logical-port limits, and RA-1G optics.",
   CONNECTOR_MAPPING: "Defining the required physical interface (LC vs MPO) based on the transceiver optics engine (Parallel vs WDM).",
   MODULATION: "The evolution from binary NRZ signaling (common in 100G) to multi-level PAM4 (400G+) to increase data throughput.",
   FEC_MODES: "Mathematical error correction algorithms used to maintain link stability on noise-sensitive high-speed links.",
@@ -142,6 +151,7 @@ export const KB_KEYWORDS: Record<string, string[]> = {
   LANE_DENSITY: ["lanes", "serdes", "sfp", "qsfp", "osfp", "density", "1-lane", "4-lane", "8-lane", "octal", "100g", "400g"],
   FORM_FACTORS: ["sfp", "qsfp", "osfp", "heatsink", "form factor", "physical", "cage", "thermal", "dd", "double density"],
   BREAKOUT_LOGIC: ["breakout", "serdes", "4x100g", "8x100g", "split", "fanout", "channelization"],
+  HARDWARE_REFERENCE: ["gearbox", "gear box", "interface type", "100g-2", "100g-4", "50g-1", "50g-2", "logical port", "asic channel", "serdes", "ra-1g", "1g in 10g interface", "sfp-10g-ra-1g-sx", "sfp-10g-ra-1g-lx", "sfp-10g-mra-t", "dsfp", "osfp-xd", "7280cr3-36s"],
   CONNECTOR_MAPPING: ["lc", "mpo", "duplex", "parallel", "connector", "patch", "mating", "psm4", "cwdm4"],
   MODULATION: ["nrz", "pam4", "symbol", "bit", "signaling", "modulation", "snr", "noise"],
   FEC_MODES: ["rs-fec", "firecode", "error correction", "fec", "latency", "bit error", "ber"],
@@ -154,7 +164,7 @@ export const KB_KEYWORDS: Record<string, string[]> = {
 
 export const CONCEPT_TAB_MAP: Record<string, string> = {
   FIBER_CORE: "CONNECTIVITY", REACH_TABLE: "CONNECTIVITY", CLEANING: "CONNECTIVITY", LOSS_BUDGET: "CONNECTIVITY", SAFETY_RULES: "CONNECTIVITY", POLARITY: "CONNECTIVITY",
-  LANE_DENSITY: "HARDWARE", FORM_FACTORS: "HARDWARE", BREAKOUT_LOGIC: "HARDWARE", CONNECTOR_MAPPING: "HARDWARE",
+  LANE_DENSITY: "HARDWARE", FORM_FACTORS: "HARDWARE", BREAKOUT_LOGIC: "HARDWARE", HARDWARE_REFERENCE: "HARDWARE", CONNECTOR_MAPPING: "HARDWARE",
   MODULATION: "SIGNALING", FEC_MODES: "SIGNALING",
   AI_STRATEGY: "STRATEGY", OVERSUB: "STRATEGY",
   DOM_SCALE: "OPERATIONS", DEBUG_FLOW: "OPERATIONS",
@@ -171,6 +181,7 @@ export const RULES_OF_THUMB: Record<string, string[]> = {
   LANE_DENSITY: ["SFP = 1 Lane.", "QSFP = 4 Lanes.", "OSFP = 8 Lanes.", "100G QSFP28 uses 4x 25G NRZ lanes."],
   FORM_FACTORS: ["OSFP handles higher heat than QSFP-DD.", "QSFP-DD is backward compatible with QSFP28.", "800G requires 112G SerDes lanes."],
   BREAKOUT_LOGIC: ["400G can split to 4x 100G.", "800G can split to 2x 400G or 8x 100G.", "Breakout requires compatible software configuration."],
+  HARDWARE_REFERENCE: ["100G-2 means two electrical channels at 50G each.", "100G-4 means four electrical channels at 25G each.", "QSFP-DD consumes eight electrical channels in the documented gearbox architecture example."],
   CONNECTOR_MAPPING: ["100G-PSM4 uses MPO-12 (Parallel).", "100G-CWDM4 uses Duplex LC (WDM).", "Always check the connector type before ordering patch cords."],
   MODULATION: ["NRZ = 1 bit per symbol (Standard for 100G legacy).", "PAM4 = 2 bits per symbol (Standard for 400G+).", "PAM4 is more sensitive to noise (SNR penalty)."],
   FEC_MODES: ["RS-FEC is mandatory for PAM4 links.", "100G links may use Firecode or No-FEC depending on reach.", "FEC adds ~100-200ns of fixed latency."]
@@ -186,6 +197,7 @@ export const DECISION_IMPACTS = {
   LANE_DENSITY: "Decision impact: Determines breakout options (e.g., 100G to 4x25G). USED IN: Cable Configurator",
   FORM_FACTORS: "Decision impact: Dictates platform compatibility (QSFP28 vs QSFP-DD). USED IN: Part Finder",
   BREAKOUT_LOGIC: "Decision impact: Maps high-speed switch cages to server ports. USED IN: Cable Configurator",
+  HARDWARE_REFERENCE: "Decision impact: Prevents invalid breakout and adjacent-port assumptions on gearbox-based port groups. USED IN: Cable Configurator",
   CONNECTOR_MAPPING: "Decision impact: Defines exact patch cable for the BOM. USED IN: Cable Configurator",
   MODULATION: "Decision impact: Matches 100G NRZ vs 100G Single Lambda (PAM4). USED IN: Smart Matrix",
   FEC_MODES: "Decision impact: Prevents 'light but no link' scenarios. USED IN: Smart Matrix",

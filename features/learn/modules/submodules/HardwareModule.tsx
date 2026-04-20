@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Box, History, Zap, ArrowRightLeft, Cable, CheckCircle2, Rotate3d, ArrowUpRight } from 'lucide-react';
+import { Activity, Box, History, Zap, ArrowRightLeft, Cable, CheckCircle2, Rotate3d, ArrowUpRight, AlertTriangle, Cpu } from 'lucide-react';
 import { 
   ImpactCallout, 
   LessonIntroCard,
@@ -15,6 +15,12 @@ import {
   TRANSITION_TEXTS 
 } from '../../../../data/knowledgeBase';
 import { Page } from '../../../../types';
+import {
+  FORM_FACTOR_PROFILES,
+  INTERFACE_TYPE_RULES,
+  OBSCURE_OPTIC_PROFILES,
+  PLATFORM_GEARBOX_PROFILES,
+} from '../../../../data/hardwareReference';
 
 // Helper components that were internal to HardwareModule
 const SFPFormFactorMatrix: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onNavigate }) => (
@@ -48,6 +54,155 @@ const SFPFormFactorMatrix: React.FC<{ onNavigate?: (page: Page) => void }> = ({ 
     </div>
   </div>
 );
+
+const HardwareReferenceSection: React.FC = () => {
+  const gearboxProfile = PLATFORM_GEARBOX_PROFILES[0];
+
+  return (
+    <section className="space-y-8">
+      <div className="flex flex-col gap-2 border-b border-slate-200 pb-5 dark:border-white/10">
+        <div className="text-[10px] font-black uppercase tracking-[0.24em] text-blue-600 dark:text-blue-400">Hardware Reference</div>
+        <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
+          Channels, Interface Types, and Gearbox Domains
+        </h3>
+        <p className="max-w-5xl text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-400">
+          Reference-depth notes derived from the source document. The 7280CR3-36S material is an architecture example, not a universal rule for every platform.
+        </p>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-slate-900/50">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"><Cpu size={18} /></div>
+            <h4 className="text-lg font-black text-slate-900 dark:text-white">Electrical Channels and SerDes</h4>
+          </div>
+          <div className="grid gap-3 text-sm text-slate-600 dark:text-slate-300">
+            {[
+              'A channel is the conductor path carrying signal between ASIC, board, module connector, and optic.',
+              'SerDes is the ASIC-side serialization/deserialization function that maps processor data into high-speed serial channels.',
+              'An optic consumes the same number of front-panel electrical channels as the optic requires on its electrical side.',
+              'Breakout creates more ASIC logical ports; platform logical-port limits still apply even when physical cages remain fixed.',
+            ].map((item) => (
+              <div key={item} className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 font-medium dark:border-slate-800 dark:bg-slate-950">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300"><AlertTriangle size={18} /></div>
+            <h4 className="text-lg font-black text-slate-900 dark:text-white">Obscure 1G-in-10G Optics</h4>
+          </div>
+          <div className="space-y-3">
+            {OBSCURE_OPTIC_PROFILES.map((optic) => (
+              <div key={optic.sku} className="rounded-xl border border-white bg-white p-4 dark:border-amber-500/10 dark:bg-slate-950">
+                <div className="font-mono text-sm font-black text-slate-900 dark:text-white">{optic.sku}</div>
+                <p className="mt-1 text-xs font-medium leading-relaxed text-slate-600 dark:text-slate-400">
+                  {optic.hostPresentation} {optic.frontEndBehavior}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-slate-900/50">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h4 className="text-lg font-black text-slate-900 dark:text-white">Form Factor and Lane Table</h4>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Source document progression</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-xs">
+            <thead className="border-b border-slate-200 text-[10px] uppercase tracking-widest text-slate-500 dark:border-slate-800">
+              <tr>
+                <th className="py-3 pr-4">Form factor</th>
+                <th className="py-3 pr-4">Nominal speed</th>
+                <th className="py-3 pr-4">Electrical channels</th>
+                <th className="py-3 pr-4">Channel rate</th>
+                <th className="py-3 pr-4">Modulation</th>
+                <th className="py-3 pr-4">Breakout modes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {FORM_FACTOR_PROFILES.map((profile) => (
+                <tr key={profile.formFactor}>
+                  <td className="py-3 pr-4 font-mono font-black text-slate-900 dark:text-white">{profile.formFactor}</td>
+                  <td className="py-3 pr-4 font-medium text-slate-700 dark:text-slate-300">{profile.nominalSpeed}</td>
+                  <td className="py-3 pr-4 font-mono text-blue-600 dark:text-blue-400">{profile.electricalLanes}</td>
+                  <td className="py-3 pr-4 font-mono text-slate-700 dark:text-slate-300">{profile.laneRate}</td>
+                  <td className="py-3 pr-4 text-slate-600 dark:text-slate-400">{profile.modulation}</td>
+                  <td className="py-3 pr-4 font-mono text-slate-600 dark:text-slate-400">{profile.supportedBreakoutModes.join(', ')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-slate-900/50">
+          <div className="mb-4">
+            <h4 className="text-lg font-black text-slate-900 dark:text-white">Interface Types and Breakout Consequences</h4>
+            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              Interface type notation states how many electrical channels the optic requires, not just the printed speed.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {INTERFACE_TYPE_RULES.map((rule) => (
+              <div key={rule.notation} className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="font-mono text-sm font-black text-slate-900 dark:text-white">{rule.notation}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                    {rule.channelCount} x {rule.laneRate}
+                  </div>
+                </div>
+                <div className="mt-2 grid gap-2 text-xs font-medium text-slate-600 dark:text-slate-400 md:grid-cols-2">
+                  <div>{rule.breakoutResult}</div>
+                  <div>{rule.disabledPortImpact}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-slate-900/50">
+          <div className="mb-4">
+            <h4 className="text-lg font-black text-slate-900 dark:text-white">Gearbox Domains and Logical Port Limits</h4>
+            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              {gearboxProfile.platform}: {gearboxProfile.scope}
+            </p>
+          </div>
+          <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs font-medium leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+            <div className="font-black text-slate-900 dark:text-white">{gearboxProfile.logicalPortLimit}</div>
+            <div className="mt-1">{gearboxProfile.architectureNote}</div>
+          </div>
+          <div className="space-y-3">
+            {gearboxProfile.domains.map((domain) => (
+              <div key={domain.id} className="rounded-xl border border-slate-100 p-4 dark:border-slate-800">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="font-mono text-sm font-black text-slate-900 dark:text-white">{domain.id}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">{domain.portRange}</div>
+                </div>
+                <div className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                  {domain.asicChannelInput} {'->'} {domain.frontPanelChannelOutput}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {domain.practicalConstraints.map((constraint) => (
+                    <span key={constraint} className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      {constraint}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 export const HardwareModule: React.FC<ModuleProps> = ({ onNavigate }) => (
   <div className="space-y-10 animate-fade-in font-sans">
@@ -165,6 +320,7 @@ export const HardwareModule: React.FC<ModuleProps> = ({ onNavigate }) => (
         </div>
         <BreakoutSelector />
         <SFPFormFactorMatrix onNavigate={onNavigate} />
+        <HardwareReferenceSection />
         <AdvancedNotesPanel conceptId="FORM_FACTORS" />
         <ImpactCallout text={DECISION_IMPACTS.FORM_FACTORS} onNavigate={onNavigate} />
       </div>

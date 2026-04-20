@@ -1,9 +1,13 @@
 
-import React from 'react';
-import { Zap, Info, Server, AlertTriangle, Settings2, Cable } from 'lucide-react';
+import React, { useState } from 'react';
+import { Zap, Info, Server, AlertTriangle, Settings2, Cable, Cpu, Grid3X3 } from 'lucide-react';
 import { BREAKOUT_CONFIGS } from '../features/breakout/data/configs';
+import { INTERFACE_TYPE_RULES, PLATFORM_GEARBOX_PROFILES } from '../data/hardwareReference';
 
 const BreakoutVisualizer: React.FC = () => {
+  const [referenceMode, setReferenceMode] = useState<'breakout' | 'gearbox'>('breakout');
+  const gearboxProfile = PLATFORM_GEARBOX_PROFILES[0];
+
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       <div className="flex flex-col gap-2">
@@ -11,6 +15,26 @@ const BreakoutVisualizer: React.FC = () => {
         <p className="text-slate-500 dark:text-slate-400 max-w-4xl">
           Visualizing the three primary methods to breakout a 400G switch port to 100G hosts.
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/5 dark:bg-slate-900">
+        {[
+          { id: 'breakout' as const, label: 'Breakout Paths', icon: Cable },
+          { id: 'gearbox' as const, label: 'Gearbox / Interface Type Reference', icon: Cpu },
+        ].map((mode) => (
+          <button
+            key={mode.id}
+            onClick={() => setReferenceMode(mode.id)}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors ${
+              referenceMode === mode.id
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white'
+            }`}
+          >
+            <mode.icon size={14} />
+            {mode.label}
+          </button>
+        ))}
       </div>
 
       <div className="rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6 shadow-sm dark:border-indigo-500/20 dark:from-indigo-500/10 dark:to-slate-900 dark:bg-none">
@@ -30,7 +54,80 @@ const BreakoutVisualizer: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-12">
+      {referenceMode === 'gearbox' && (
+        <div className="space-y-8">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-slate-900">
+            <div className="mb-2 text-[10px] font-black uppercase tracking-[0.24em] text-blue-600 dark:text-blue-400">Reference Mode</div>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white">Gearbox / Interface Type Logic</h3>
+            <p className="mt-2 max-w-5xl text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-400">
+              Interface type notation describes electrical channel count. The 7280CR3-36S examples below are source-document architecture examples and should not be generalized to every platform.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/5 dark:bg-slate-900">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"><Grid3X3 size={18} /></div>
+                <h4 className="text-lg font-black text-slate-900 dark:text-white">100G-2 vs 100G-4</h4>
+              </div>
+              <div className="space-y-3">
+                {INTERFACE_TYPE_RULES.filter((rule) => rule.notation.startsWith('100G')).map((rule) => (
+                  <div key={rule.notation} className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="font-mono text-sm font-black text-slate-900 dark:text-white">{rule.notation}</div>
+                      <div className="rounded-full bg-blue-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                        consumes {rule.consumedChannels} channels
+                      </div>
+                    </div>
+                    <div className="mt-2 grid gap-2 text-xs font-medium text-slate-600 dark:text-slate-400 md:grid-cols-2">
+                      <span>{rule.channelCount} channels x {rule.laneRate}</span>
+                      <span>{rule.breakoutResult}</span>
+                      <span className="md:col-span-2">{rule.disabledPortImpact}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/5 dark:bg-slate-900">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="rounded-lg bg-amber-50 p-2 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300"><AlertTriangle size={18} /></div>
+                <h4 className="text-lg font-black text-slate-900 dark:text-white">QSFP56 vs QSFP-DD Consumption</h4>
+              </div>
+              <div className="space-y-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                  <div className="font-mono font-black text-slate-900 dark:text-white">QSFP56</div>
+                  <p className="mt-1 text-xs leading-relaxed">Uses four electrical channels. In the documented example, `100G-2` on QSFP56 yields two 100G breakout ports with no adjacent channel steal.</p>
+                </div>
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                  <div className="font-mono font-black text-slate-900 dark:text-white">QSFP-DD</div>
+                  <p className="mt-1 text-xs leading-relaxed">Uses eight electrical channels. In the documented gearbox architecture, a QSFP-DD optic consumes all eight channels even if not every channel is actively used.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/5 dark:bg-slate-900">
+            <div className="mb-4">
+              <h4 className="text-lg font-black text-slate-900 dark:text-white">{gearboxProfile.platform} Gearbox Domains</h4>
+              <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{gearboxProfile.logicalPortLimit}</p>
+            </div>
+            <div className="grid gap-4 lg:grid-cols-4">
+              {gearboxProfile.domains.map((domain) => (
+                <div key={domain.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                  <div className="font-mono text-sm font-black text-slate-900 dark:text-white">{domain.id}</div>
+                  <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-500">{domain.portRange}</div>
+                  <div className="mt-3 text-xs font-medium leading-relaxed text-slate-600 dark:text-slate-400">
+                    {domain.asicChannelInput} {'->'} {domain.frontPanelChannelOutput}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {referenceMode === 'breakout' && <div className="flex flex-col gap-12">
         {BREAKOUT_CONFIGS.map((config) => {
           const isSMF = config.id === 'SMF';
           const isPassive = config.id === 'DAC_PASSIVE';
@@ -164,9 +261,9 @@ const BreakoutVisualizer: React.FC = () => {
             </div>
           );
         })}
-      </div>
+      </div>}
 
-      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-white/5 dark:bg-slate-900/40">
+      {referenceMode === 'breakout' && <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-white/5 dark:bg-slate-900/40">
         <div className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Lab Takeaways</div>
         <div className="grid gap-3 md:grid-cols-2">
           {[
@@ -180,7 +277,7 @@ const BreakoutVisualizer: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

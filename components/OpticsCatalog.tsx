@@ -23,6 +23,7 @@ import {
 import { AppNavigationParams, Optic, Cable, Page, LearnPageTab } from '../types';
 import { normalizeCatalog, filterCatalog, getUniqueFormFactors } from '../features/catalog/lib/query';
 import { buildBOMItemId, useBOM } from '../context/BOMContext';
+import { getFormFactorProfile } from '../data/hardwareReference';
 
 interface OpticsCatalogProps {
     onNavigate: (page: Page, subTab?: LearnPageTab, sku?: string, params?: AppNavigationParams) => void;
@@ -243,6 +244,11 @@ const OpticsCatalog: React.FC<OpticsCatalogProps> = ({ onNavigate }) => {
           const media = isOptic ? optic.media : cable.type;
           const connector = isOptic ? optic.connector : (cable.isBreakout ? 'Breakout' : 'Integrated');
           const isBreakout = isOptic ? (optic.breakoutModeIds.length > 0) : cable.isBreakout;
+          const referenceProfile = getFormFactorProfile(formFactor);
+          const electricalLanes = isOptic ? optic.electricalLanes : cable.electricalLanes;
+          const laneRate = isOptic ? optic.laneRate : cable.laneRate;
+          const interfaceTypeAliases = isOptic ? optic.interfaceTypeAliases : cable.interfaceTypeAliases;
+          const gearboxCaveat = isOptic ? optic.gearboxCaveat : cable.gearboxCaveat;
 
           return (
             <div key={item.sku} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 overflow-hidden hover:border-blue-500/50 hover:shadow-lg dark:hover:shadow-2xl hover:shadow-blue-500/10 transition-all group flex flex-col shadow-sm">
@@ -300,7 +306,29 @@ const OpticsCatalog: React.FC<OpticsCatalogProps> = ({ onNavigate }) => {
                           </span>
                       </div>
                   )}
+                  <div className="flex flex-col">
+                      <span className="aom-text-sub mb-0.5 uppercase text-[9px] font-bold tracking-tight">Electrical</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium aom-mono">
+                          {electricalLanes ?? referenceProfile?.electricalLanes ?? (isOptic ? optic.lanes : undefined) ?? 'N/A'} ch
+                      </span>
+                  </div>
+                  <div className="flex flex-col">
+                      <span className="aom-text-sub mb-0.5 uppercase text-[9px] font-bold tracking-tight">Lane Rate</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium aom-mono">
+                          {laneRate ?? referenceProfile?.laneRate ?? 'N/A'}
+                      </span>
+                  </div>
                 </div>
+
+                {(interfaceTypeAliases?.length || referenceProfile || gearboxCaveat) && (
+                  <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-3 text-[10px] font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <div>Modulation: {isOptic ? optic.modulation : referenceProfile?.modulation ?? 'N/A'}</div>
+                      <div>Interface: {interfaceTypeAliases?.join(', ') ?? referenceProfile?.supportedBreakoutModes.join(', ') ?? 'N/A'}</div>
+                    </div>
+                    {gearboxCaveat && <div className="mt-2 border-t border-slate-200 pt-2 dark:border-slate-800">{gearboxCaveat}</div>}
+                  </div>
+                )}
               </div>
 
               {/* Actions Footer */}

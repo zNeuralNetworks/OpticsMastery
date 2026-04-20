@@ -28,6 +28,9 @@ export const SEARCH_ITEMS: SearchItem[] = [
   // Knowledge Base Topics
   { id: 'k-basic', title: 'Network Basics', description: 'Transceivers & Power Budget', type: 'TOPIC', icon: BookOpen, page: Page.LEARN, subTab: 'STRATEGY' },
   { id: 'k-form', title: 'Form Factors (OSFP/QSFP-DD)', description: 'Physical shapes and platform fit', type: 'TOPIC', icon: Box, page: Page.LEARN, subTab: 'HARDWARE' },
+  { id: 'k-hw-ref', title: 'Hardware Reference: Gearbox and Interface Types', description: 'gearbox interface type 100G-2 100G-4 50G-1 50G-2 logical port ASIC channel 7280CR3-36S', type: 'TOPIC', icon: Cpu, page: Page.LEARN, subTab: 'HARDWARE' },
+  { id: 'k-ra-1g', title: 'RA-1G Optics: 1G in 10G Interface', description: 'SFP-10G-RA-1G-SX SFP-10G-RA-1G-LX SFP-10G-MRA-T obscure optic front end runs at 1G', type: 'TOPIC', icon: Zap, page: Page.CATALOG },
+  { id: 'k-osfp-xd', title: 'OSFP-XD and DSFP Reference', description: 'OSFP-XD DSFP form factor lane count electrical channels 1.6T 3.2T 100G-2', type: 'TOPIC', icon: Cpu, page: Page.LEARN, subTab: 'HARDWARE' },
   { id: 'k-fund', title: 'PAM4 & FEC Signaling', description: 'Modulation fundamentals', type: 'TOPIC', icon: Activity, page: Page.LEARN, subTab: 'SIGNALING' },
   { id: 'k-media', title: 'Fiber & Copper Media', description: 'SMF, MMF, AOC, DAC types', type: 'TOPIC', icon: Hash, page: Page.LEARN, subTab: 'CONNECTIVITY' },
   { id: 'k-ai', title: 'AI Networking & RoCEv2', description: 'Lossless Ethernet for AI', type: 'TOPIC', icon: Network, page: Page.LEARN, subTab: 'STRATEGY' },

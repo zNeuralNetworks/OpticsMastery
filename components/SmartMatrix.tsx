@@ -12,6 +12,7 @@ import {
   Filter
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getFormFactorProfile } from '../data/hardwareReference';
 
 type Compatibility = 'FULL' | 'PARTIAL' | 'NONE' | 'UNKNOWN';
 
@@ -20,17 +21,21 @@ interface MatrixCell {
   dest: string;
   status: Compatibility;
   note: string;
+  interfaceTypeAliases?: string[];
+  gearboxCaveat?: string;
 }
 
 const MATRIX_DATA: MatrixCell[] = [
   { source: 'SFP+', dest: 'SFP28', status: 'FULL', note: 'SFP28 ports are backward compatible with 10G SFP+.' },
   { source: 'SFP28', dest: 'SFP+', status: 'PARTIAL', note: 'SFP+ ports cannot run SFP28 at 25G; must down-rate to 10G.' },
-  { source: 'QSFP28', dest: 'QSFP-DD', status: 'FULL', note: 'QSFP-DD ports accept legacy QSFP28 modules natively.' },
-  { source: 'QSFP-DD', dest: 'QSFP28', status: 'PARTIAL', note: 'QSFP28 ports cannot accept QSFP-DD modules (physical/power).' },
+  { source: 'QSFP28', dest: 'QSFP-DD', status: 'FULL', note: 'QSFP-DD ports accept legacy QSFP28 modules natively.', interfaceTypeAliases: ['100G-4'] },
+  { source: 'QSFP-DD', dest: 'QSFP28', status: 'PARTIAL', note: 'QSFP28 ports cannot accept QSFP-DD modules (physical/power).', interfaceTypeAliases: ['100G-4'], gearboxCaveat: 'QSFP-DD is an 8-channel module family; the documented gearbox example can require adjacent-port shutdown.' },
   { source: 'QSFP-DD', dest: 'OSFP', status: 'NONE', note: 'Physically incompatible. Requires an adapter (QDD-to-OSFP).' },
   { source: 'OSFP', dest: 'QSFP-DD', status: 'NONE', note: 'Physically incompatible. Different mechanical footprints.' },
-  { source: 'QSFP56', dest: 'QSFP28', status: 'PARTIAL', note: 'QSFP28 ports can run QSFP56 at 100G (NRZ), but not 200G (PAM4).' },
+  { source: 'QSFP56', dest: 'QSFP28', status: 'PARTIAL', note: 'QSFP28 ports can run QSFP56 at 100G (NRZ), but not 200G (PAM4).', interfaceTypeAliases: ['100G-2', '100G-4'] },
   { source: 'QSFP28', dest: 'QSFP+', status: 'FULL', note: 'QSFP28 ports typically support 40G QSFP+ modules.' },
+  { source: 'DSFP', dest: 'SFP footprint', status: 'PARTIAL', note: 'DSFP provides 100G in an SFP-sized form factor using 2x50G electrical channels.', interfaceTypeAliases: ['100G-2'] },
+  { source: 'OSFP-XD', dest: 'OSFP', status: 'UNKNOWN', note: 'OSFP-XD is a future extra-dense OSFP evolution expanding from 8 to 16 channels.' },
 ];
 
 const SmartMatrix: React.FC = () => {
@@ -39,8 +44,20 @@ const SmartMatrix: React.FC = () => {
   const [selectedCell, setSelectedCell] = useState<MatrixCell | null>(null);
 
   const filteredData = MATRIX_DATA.filter(cell => {
-    const matchesSearch = cell.source.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         cell.dest.toLowerCase().includes(searchTerm.toLowerCase());
+    const sourceProfile = getFormFactorProfile(cell.source);
+    const destProfile = getFormFactorProfile(cell.dest);
+    const searchable = [
+      cell.source,
+      cell.dest,
+      cell.note,
+      cell.interfaceTypeAliases?.join(' '),
+      cell.gearboxCaveat,
+      sourceProfile?.laneRate,
+      sourceProfile?.modulation,
+      destProfile?.laneRate,
+      destProfile?.modulation,
+    ].filter(Boolean).join(' ').toLowerCase();
+    const matchesSearch = searchable.includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'ALL' || cell.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -109,6 +126,11 @@ const SmartMatrix: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <AnimatePresence mode="popLayout">
           {filteredData.map((cell) => (
+            (() => {
+              const sourceProfile = getFormFactorProfile(cell.source);
+              const destProfile = getFormFactorProfile(cell.dest);
+              const referenceProfile = sourceProfile ?? destProfile;
+              return (
             <motion.div
               layout
               key={`${cell.source}-${cell.dest}`}
@@ -143,7 +165,17 @@ const SmartMatrix: React.FC = () => {
               <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                 {cell.note}
               </p>
+              {referenceProfile && (
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-500 dark:border-slate-800">
+                  <div>{referenceProfile.electricalLanes} channels</div>
+                  <div>{referenceProfile.laneRate}</div>
+                  <div>{referenceProfile.modulation}</div>
+                  <div>{cell.interfaceTypeAliases?.join(', ') ?? 'No alias'}</div>
+                </div>
+              )}
             </motion.div>
+              );
+            })()
           ))}
         </AnimatePresence>
       </div>
@@ -198,6 +230,25 @@ const SmartMatrix: React.FC = () => {
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
                     {selectedCell.note}
                   </p>
+                  {(() => {
+                    const sourceProfile = getFormFactorProfile(selectedCell.source);
+                    const destProfile = getFormFactorProfile(selectedCell.dest);
+                    const referenceProfile = sourceProfile ?? destProfile;
+                    if (!referenceProfile && !selectedCell.gearboxCaveat) return null;
+                    return (
+                      <div className="grid gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+                        {referenceProfile && (
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><span className="font-black text-slate-900 dark:text-white">Electrical channels:</span> {referenceProfile.electricalLanes}</div>
+                            <div><span className="font-black text-slate-900 dark:text-white">Lane rate:</span> {referenceProfile.laneRate}</div>
+                            <div><span className="font-black text-slate-900 dark:text-white">Modulation:</span> {referenceProfile.modulation}</div>
+                            <div><span className="font-black text-slate-900 dark:text-white">Aliases:</span> {selectedCell.interfaceTypeAliases?.join(', ') ?? 'None'}</div>
+                          </div>
+                        )}
+                        {selectedCell.gearboxCaveat && <div><span className="font-black text-slate-900 dark:text-white">Gearbox caveat:</span> {selectedCell.gearboxCaveat}</div>}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div className="pt-4 flex gap-3">

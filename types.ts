@@ -97,6 +97,11 @@ export interface Optic {
   reachClass?: ReachClass;
   wavelengthNm?: number | null;
   opticBudgetDb?: number | null;
+  electricalLanes?: number;
+  laneRate?: string;
+  interfaceTypeAliases?: string[];
+  gearboxCaveat?: string;
+  searchKeywords?: string[];
 }
 
 export interface Cable {
@@ -112,6 +117,11 @@ export interface Cable {
   skuPrecision?: 'exact' | 'family-length-variable';
   // New Enriched Metadata Fields
   reachClass?: ReachClass;
+  electricalLanes?: number;
+  laneRate?: string;
+  interfaceTypeAliases?: string[];
+  gearboxCaveat?: string;
+  searchKeywords?: string[];
 }
 
 // Keep legacy types for backward compatibility during transition

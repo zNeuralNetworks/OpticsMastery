@@ -28,8 +28,15 @@ export const filterCatalog = (items: CatalogItem[], criteria: CatalogFilterCrite
 
   return items.filter(item => {
     // 1. Search Term Match
-    const matchesSearch = item.sku.toLowerCase().includes(term) || 
-                          item.description.toLowerCase().includes(term);
+    const searchableFields = [
+      item.sku,
+      item.description,
+      'interfaceTypeAliases' in item ? item.interfaceTypeAliases?.join(' ') : '',
+      'gearboxCaveat' in item ? item.gearboxCaveat : '',
+      'searchKeywords' in item ? item.searchKeywords?.join(' ') : '',
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    const matchesSearch = searchableFields.includes(term);
     
     if (!matchesSearch) return false;
 
