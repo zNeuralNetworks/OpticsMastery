@@ -92,3 +92,5 @@ values.dev.yaml
 *.key
 *.p8
 *.p12
+# Added by code-review-graph
+.code-review-graph/

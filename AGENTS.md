@@ -2,7 +2,7 @@ You are working in the Optics Master repository.
 
 Context:
 - This repo currently contains two app shapes:
-  - the canonical Optics Master shell, mounted from `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/index.tsx` and rendered by `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/App.tsx`
+  - the canonical Optics Master shell, mounted from `index.tsx` and rendered by `App.tsx`
   - a copied router-based `src/` app from AI Fabric Architecture Studio that remains in-tree as reference/staging code
 - The production-local boot target for this repo is the legacy Optics Master shell, not `src/main.tsx`.
 - The AI Cluster Planner inside the legacy shell has absorbed a number of newer planner concepts, but it is still not the same UI architecture as the standalone `src/features/cluster-designer` app.
@@ -19,16 +19,16 @@ How to work here:
 - Before committing or pushing, check ignored tracked files with `git ls-files -ci --exclude-standard`. Keep local agent artifacts, temporary PDFs/extracts, build output, and secrets out of Git.
 
 Fastest review path for Optics Master:
-1. Read `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/README.md`
-2. Read `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/docs/CODEX_RUNBOOK.md`
-3. Confirm boot path in `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/index.html`
-4. Review `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/App.tsx`
+1. Use code-review-graph for broad orientation before reading source files.
+2. Read `README.md` and `docs/CODEX_RUNBOOK.md`.
+3. Confirm boot path in `index.html`.
+4. Review `App.tsx`.
 5. If the task is planner-specific, read:
-   - `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/components/AIClusterPlanner.tsx`
-   - `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/hooks/useAIPlanner.ts`
-   - `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/services/aiPlannerService.ts`
-   - `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/services/sizerEngine.ts`
-   - `/Users/theorajan/Library/Mobile Documents/com~apple~CloudDocs/6 - Design Engineering/Projects/optics-master/components/ClusterDiagram.tsx`
+   - `components/AIClusterPlanner.tsx`
+   - `hooks/useAIPlanner.ts`
+   - `services/aiPlannerService.ts`
+   - `services/sizerEngine.ts`
+   - `components/ClusterDiagram.tsx`
 
 Planner-specific guidance:
 - The legacy planner currently owns the live customer-facing AI cluster workflow.
@@ -61,3 +61,34 @@ Avoid:
 - Mixing presentation concerns into planner derivation code
 - Turning the planner into exact procurement, exact optics validation, or deployment-ready guidance
 - Assuming a UI change landed just because it exists in `src/`; check the legacy shell path first
+
+## code-review-graph workflow
+
+Use code-review-graph before broad `rg`, `find`, or whole-file reads.
+Keep graph calls small, then read only the files the graph identifies.
+
+Available MCP tools in this repo are currently:
+
+- `list_graph_stats_tool`: graph freshness, file/node/edge counts
+- `get_architecture_overview_tool`: communities and cross-community coupling
+- `get_suggested_questions_tool`: review prompts from graph structure
+- `get_bridge_nodes_tool`: high-betweenness chokepoints
+- `get_surprising_connections_tool`: unexpected coupling
+- `generate_wiki_tool`: optional local markdown wiki
+- `list_repos_tool`: registered repo inventory
+
+CLI fallbacks for deeper analysis:
+
+```bash
+code-review-graph status --repo .
+code-review-graph detect-changes --repo . --brief
+code-review-graph update --repo . --skip-flows
+code-review-graph build --repo .
+```
+
+Token-efficient pattern:
+
+1. Start with graph stats plus architecture overview.
+2. Use suggested questions, bridge nodes, or surprising connections only when relevant.
+3. Use targeted `rg` or file reads after the graph narrows the surface.
+4. After meaningful edits, run `code-review-graph update --repo . --skip-flows`; use full `build` only after broad moves/renames.

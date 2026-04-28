@@ -1,0 +1,10 @@
+Read `AGENTS.md` first. Use code-review-graph before broad source scans.
+
+Fast checks:
+
+```bash
+code-review-graph status --repo .
+code-review-graph detect-changes --repo . --brief
+```
+
+Use graph orientation first, then targeted file reads.

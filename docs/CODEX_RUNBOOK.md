@@ -90,11 +90,37 @@ Latest known GitHub sync:
 ## Default review workflow
 
 1. Read `AGENTS.md`
-2. Read `README.md`
-3. Read `docs/ARCHITECTURE_SURFACES.md`
-4. Confirm the entrypoint in `index.html`
-5. Review `App.tsx` to understand the live navigation surface
-6. Only then branch into the relevant feature files
+2. Check graph freshness with `code-review-graph status --repo .` or the graph MCP stats tool
+3. Use graph architecture overview before broad source scans
+4. Read `README.md` and `docs/ARCHITECTURE_SURFACES.md`
+5. Confirm the entrypoint in `index.html`
+6. Review `App.tsx` to understand the live navigation surface
+7. Only then branch into the relevant feature files
+
+## Token-efficient graph workflow
+
+Use the graph for orientation and impact, then read exact source lines only after the target surface is clear.
+
+Recommended first calls:
+
+- `list_graph_stats_tool` for freshness and scale
+- `get_architecture_overview_tool` for communities and coupling
+- `get_suggested_questions_tool` when doing a review
+- `get_bridge_nodes_tool` or `get_surprising_connections_tool` when a change touches shared behavior
+
+CLI fallbacks:
+
+```bash
+code-review-graph status --repo .
+code-review-graph detect-changes --repo . --brief
+code-review-graph update --repo . --skip-flows
+```
+
+Use a full rebuild only after broad file moves, renames, or graph drift:
+
+```bash
+code-review-graph build --repo .
+```
 
 ## Fast planner review workflow
 

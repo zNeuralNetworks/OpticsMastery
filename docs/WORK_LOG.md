@@ -10,6 +10,37 @@ Update rule:
 Suggested next-session prompt:
 - `Review docs/WORK_LOG.md first, then continue from the latest open items.`
 
+## 2026-04-28
+
+### Codex, Graph, and Linear Reconciliation
+- Refreshed repo-local Codex guidance so agents start with code-review-graph before broad source scans.
+- Updated `AGENTS.md`, `docs/CODEX_RUNBOOK.md`, and `docs/codex_setup_review.md` with repo-relative paths, current graph workflow, and CLI fallbacks.
+- Added lightweight root agent notes and MCP configs that anchor code-review-graph to this repo with `--repo .`.
+- Registered the code-review-graph repo alias as `optics-master`.
+- Updated Linear `OpticsMastery` project state and created focused issues from repo strategy docs:
+  - `TGR-115` planner autosave/reopen
+  - `TGR-116` recent designs/design packages
+  - `TGR-117` recommendation-driven compare flows
+  - `TGR-118` guided optics education roadmap
+  - `TGR-119` reference planner governance
+  - `TGR-120` in-app engineering backlog reconciliation
+
+Why it mattered:
+- future Codex sessions should spend fewer tokens discovering the same live-vs-reference boundary
+- Linear now reflects the actual deployed repo state and the next executable OpticsMastery work
+
+Verification:
+- `code-review-graph status --repo .`
+- `code-review-graph update --repo . --skip-flows`
+- `code-review-graph detect-changes --repo . --brief`
+- JSON parse check for MCP/settings files
+- `git ls-files -ci --exclude-standard`
+- `npm run doctor`
+
+Open follow-ups:
+- decide whether to commit cross-agent local config files such as `.cursor/`, `.qoder/`, `.opencode.json`, `CLAUDE.md`, `GEMINI.md`, and `QODER.md`
+- run `nvm use` before full `npm run verify` to match the Node 22 baseline
+
 ## 2026-04-14
 
 ### GitHub Sync and Repository Hygiene
